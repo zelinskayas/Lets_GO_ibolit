@@ -3,12 +3,26 @@ package Lets_GO_ibolit
 import (
 	"encoding/json"
 	"os"
+	"sort"
 )
 
 type animal struct {
 	Name  string `json:"name"`
 	Age   int    `json:"age"`
 	Email string `json:"email"`
+}
+
+// sort
+type ByAge []animal
+
+func (a ByAge) Len() int {
+	return len(a)
+}
+func (a ByAge) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+func (a ByAge) Less(i, j int) bool {
+	return a[i].Age < a[j].Age
 }
 
 func Do(sourcefile, resultfile string) error {
@@ -27,6 +41,9 @@ func Do(sourcefile, resultfile string) error {
 		}
 		res = append(res, a)
 	}
+
+	//sort by age
+	sort.Sort(ByAge(res))
 
 	fnew, err := os.Create(resultfile)
 	if err != nil {
