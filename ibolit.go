@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"os"
+	"sort"
 )
 
 type Patient struct {
@@ -14,6 +15,19 @@ type Patient struct {
 
 type patients struct {
 	List []Patient `xml:"Patient"`
+}
+
+// sort
+type ByAge []Patient
+
+func (a ByAge) Len() int {
+	return len(a)
+}
+func (a ByAge) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+func (a ByAge) Less(i, j int) bool {
+	return a[i].Age < a[j].Age
 }
 
 func Do(sourcefile, resultfile string) error {
@@ -32,6 +46,9 @@ func Do(sourcefile, resultfile string) error {
 		}
 		p.List = append(p.List, a)
 	}
+
+	//sort by age
+	sort.Sort(ByAge(p.List))
 
 	fnew, err := os.Create(resultfile)
 	if err != nil {
